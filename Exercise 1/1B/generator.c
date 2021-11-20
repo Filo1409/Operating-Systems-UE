@@ -20,14 +20,6 @@
 #define SEM3_NAME "/sem3"
 #define SEM4_NAME "/sem4"
 
-struct vertex {
-    int colour;
-    char name;
-};
-
-struct edge {
-    struct vertex v1, v2;
-};
 
 int generatevertices (struct vertex vertices[], int verticesize, struct edge edges[], int edgessize);
 
@@ -35,7 +27,7 @@ void generatecolours (struct vertex vertices[], struct edge edges[], int vertice
 
 void attachcolours (struct vertex vertices[], int ind, struct edge edges[], int edgesize);
 
-int generateSolution (struct edge edges[], int edgesize);
+int generateSolution (struct edge edges[], int edgesize, struct circ *circ);
 
 
 int main (int argc, char *argv[]){
@@ -104,7 +96,7 @@ struct edge edges[argc];
         generatecolours(vertices, edges, ind);
         attachcolours(vertices, ind, edges, sizeof(edges));
 
-        int sol = generateSolution(edges, sizeof(edges));
+        int sol = generateSolution(edges, sizeof(edges), circ);
 
         // if (sem_wait(semgen) == -1){
         //     fprintf(stderr, "[%s] ERROR: wait for 'gen' semaphore\n %s\n", argv[0], strerror(errno));
@@ -118,7 +110,7 @@ struct edge edges[argc];
                 exit(1);
             }
         
-            circ->data[circ->writepos] = sol;
+            circ->data[circ->writepos].count = sol;
             bestSolution = sol;
 
             if (sem_post(semused) == -1){
@@ -231,12 +223,14 @@ void attachcolours (struct vertex vertices[], int ind, struct edge edges[], int 
 }
 
 
-int generateSolution (struct edge edges[], int edgesize){
+int generateSolution (struct edge edges[], int edgesize, struct circ *circ){
     int count = 0;
     for (int i = 0; i < edgesize / sizeof(struct edge) - 1; i++){
         if ((edges[i].v1).colour == (edges[i].v2).colour){
             (edges[i].v1).colour = -1;
             (edges[i].v2).colour = -1;
+            circ->data[circ->writepos].edges[count].v1 = edges[i].v1;
+            circ->data[circ->writepos].edges[count].v2 = edges[i].v2;
             count++;
         }
     }

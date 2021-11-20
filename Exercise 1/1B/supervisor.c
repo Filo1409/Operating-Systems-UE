@@ -115,13 +115,20 @@ int main (int argc, char *argv[]){
             fprintf(stderr, "[%s] ERROR: wait for 'used' semaphore\n %s\n", argv[0], strerror(errno));
             exit(1);
         }
-        sol = circ->data[circ->readpos];
+        sol = circ->data[circ->readpos].count;
         if (sol == 0){
             printf("The graph is 3-colourable!\n");
             quit=true;
         } else if (sol < best){
             best = sol;
-            printf("Solution with %d edges: \n", best);
+            char *remEdges = malloc(sizeof(char) * 4 * sol);
+            for (int i = 0; i < sol; i++){
+                remEdges[i] = circ->data->edges[circ->readpos].v1.name;
+                remEdges[i+1] = "-";
+                remEdges[i+2] = circ->data->edges[circ->readpos].v2.name;
+                remEdges[i+3] = " ";
+            }
+            printf("Solution with %d edges: %s\n", best, remEdges);
         }
         if (sem_post(semfree) == -1){
             fprintf(stderr, "[%s] ERROR: post for 'free' semaphore\n %s\n", argv[0], strerror(errno));
