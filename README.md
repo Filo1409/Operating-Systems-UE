@@ -1,3 +1,3 @@
 # Operating-Systems-UE
 
-Sammlung v. Beispielen für Betriebssysteme UE
+Sammlung von Beispielen für Betriebssysteme UE
