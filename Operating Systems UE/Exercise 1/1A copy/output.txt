@@ -1,0 +1,4 @@
+The lines aren't the same
+differences = 1
+The lines aren't the same
+differences = 3
